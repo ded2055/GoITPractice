@@ -1,4 +1,4 @@
-package goit2_2;
+package goit.task2_2;
 
 public class PositiveAverageNumber {
     public int average(int a, int b) {
