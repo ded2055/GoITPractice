@@ -1,66 +1,61 @@
 package goit.task3_5;
 
-
-public class BinaryHeap{
-    int[] heap;
-    int lastIndex = 0;
+public class BinaryHeap {
+    private int[] heap;
+    private int lastHeapElementIndex = -1;
 
     public BinaryHeap(int size) {
         heap = new int[size];
     }
 
-    public void insert(int val) {
-        if (lastIndex < heap.length) {
-            heap[lastIndex] = val;
-            int i = lastIndex;
-            int parent = (i - 1) / 2;
+    private void heapyfy(int i){
+        int leftChild = 2 * i;
+        int rightChild = 2 * i + 1;
+        int largestChild = i;
 
-            while (i > 0 && heap[parent] < heap[i]) {
-                int temp = heap[i];
-                heap[i] = heap[parent];
-                heap[parent] = temp;
+            if (leftChild <= lastHeapElementIndex && heap[leftChild] > heap[largestChild])
+                largestChild = leftChild;
 
-                i = parent;
-                parent = (i - 1) / 2;
+            if (rightChild <= lastHeapElementIndex && heap[rightChild] > heap[largestChild])
+                largestChild = rightChild;
+
+            if (largestChild != i){
+                int tmp = heap[largestChild];
+                heap[largestChild] = heap[i];
+                heap[i] = tmp;
+                heapyfy(largestChild);
+            }
+    }
+
+    private void heapIncreaseKey(int i) {
+        if (heap[i] > heap[i - 1]) {
+            while (i >= 1 && heap[i / 2] < heap[i]) {
+                int tmp = heap[i/2];
+                heap[i/2] = heap[i];
+                heap[i] = tmp;
+                i = i/2;
             }
         }
-        lastIndex++;
+    }
+
+    public void insert(int val) {
+        if (lastHeapElementIndex+1 < heap.length) {
+            lastHeapElementIndex++;
+            heap[lastHeapElementIndex] = val;
+            if (lastHeapElementIndex > 0)
+                heapIncreaseKey(lastHeapElementIndex);
+        }
     }
 
     public int poll() {
         int result = heap[0];
-        int[] heapWithoutMax = new int[heap.length-1];
-        heap[0] = heap[heap.length - 1];
-        System.arraycopy(heap, 0, heapWithoutMax, 0, heapWithoutMax.length);
-        heap = heapWithoutMax;
+        if (lastHeapElementIndex+1 >= 1) {
+            heap[0] = heap[lastHeapElementIndex];
+            heap[lastHeapElementIndex] = 0;
+            lastHeapElementIndex--;
+        }else {return 0;}
 
-        int i = 0;
-        while (true)
-        {
-            int leftChild = 2 * i + 1;
-            int rightChild = 2 * i + 2;
-            int largestChild = i;
-
-            if (leftChild < heap.length && heap[leftChild] > heap[largestChild])
-            {
-                largestChild = leftChild;
-            }
-
-            if (rightChild < heap.length && heap[rightChild] > heap[largestChild])
-            {
-                largestChild = rightChild;
-            }
-
-            if (largestChild == i)
-            {
-                break;
-            }
-
-            int temp = heap[i];
-            heap[i] = heap[largestChild];
-            heap[largestChild] = temp;
-            i = largestChild;
-        }
+        heapyfy(0);
 
         return result;
     }
